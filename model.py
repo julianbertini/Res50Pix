@@ -540,28 +540,28 @@ class Res50Unet():
         x, x_skips = encoder_model(inputs, training=False) 
         
         ## Decoder ##
-		up_stack = [
-			self.decoder(1024, (1,3,3)),
-			self.decoder(512, (1,3,3)),
-			self.decoder(256, (1,3,3)),
-			self.decoder(128, (1,3,3)),
-			self.decoder(64, (1,3,3))
-		]
-			
-		j = 0
-		for i in range(len(up_stack)):
-			x = up_stack[i](x)
-			if i > 0:
-				concat = tf.keras.layers.Concatenate()
-				x = concat([x, x_skips[j]])	
-				j+=1
+        up_stack = [
+          self.decoder(1024, (1,3,3)),
+          self.decoder(512, (1,3,3)),
+          self.decoder(256, (1,3,3)),
+          self.decoder(128, (1,3,3)),
+          self.decoder(64, (1,3,3))
+        ]
+          
+        j = 0
+        for i in range(len(up_stack)):
+          x = up_stack[i](x)
+          if i > 0:
+            concat = tf.keras.layers.Concatenate()
+            x = concat([x, x_skips[j]])	
+            j+=1
 
-		# This is the last layer of the model
-		last = tf.keras.layers.Conv3D(
-			4, (3,1,1), strides=(1,1,1),
-			padding='same') 
+        # This is the last layer of the model
+        last = tf.keras.layers.Conv3D(
+          4, (3,1,1), strides=(1,1,1),
+          padding='same') 
 
-		x = last(x)
+        x = last(x)
 
         self.net = tf.keras.Model(inputs=inputs, outputs=x, name="main_model")  
 
